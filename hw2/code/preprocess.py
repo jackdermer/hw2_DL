@@ -57,7 +57,6 @@ def get_data(file_path, first_class, second_class):
 	input_tensor = tf.transpose(tf.reshape(new_inputs, (-1, 3, 32, 32)), perm=[0,2,3,1])
 
 	num_ex, _, _, _ = input_tensor.shape
-	print(num_ex)
 	new_labels = np.append(np.zeros((num_ex//2)), np.ones((num_ex//2)))
 
 	label_tensor = tf.one_hot(new_labels, 2)

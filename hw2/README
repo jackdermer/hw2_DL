@@ -1,1 +1,5 @@
 README CNN_CIFAR
+
+On my local machine, I am getting a 0.90599996 accuracy. This changes when uploading to GradeScope, but still passes the 70% threshold.
+
+Known Bugs: N/A

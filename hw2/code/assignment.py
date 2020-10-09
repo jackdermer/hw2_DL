@@ -63,10 +63,15 @@ class Model(tf.keras.Model):
         x = tf.nn.max_pool(x, ksize=[2,2], strides=[2,2], padding='SAME')
         # print(x.shape)
 
-        x = tf.nn.conv2d(x, self.C3, strides=[1,1], padding='SAME')
+        if is_testing is True:
+            x = conv2d(x, self.C3, strides=[1,1,1,1], padding='SAME')
+        else: 
+            x = tf.nn.conv2d(x, self.C3, strides=[1,1], padding='SAME')
+        
         mean, variance = tf.nn.moments(x, [0,1,2])
         x = tf.nn.batch_normalization(x, mean=mean, variance=variance, variance_epsilon=1e-5, offset=None, scale=None)
         x = tf.nn.relu(x)
+
         # print(x.shape)
 
         x = tf.reshape(x, [self.batch_size, -1])
@@ -163,9 +168,11 @@ def test(model, test_inputs, test_labels):
     for i in range(num_batches):
         batch_inputs, batch_labels = get_batch(test_inputs, test_labels, model.batch_size, i * model.batch_size)
     
-        predictions = model.call(batch_inputs)
-        accur += model.accuracy(predictions, batch_labels)
-
+        predictions = model.call(batch_inputs, is_testing=True)
+        a = model.accuracy(predictions, batch_labels)
+        print(a)
+        accur += a
+        
     return accur/num_batches
 
 
@@ -265,7 +272,7 @@ def main():
         
         train(model, train_inputs, train_labels)
     
-    visualize_loss(model.loss_list)
+    # visualize_loss(model.loss_list)
 
     test_rands = tf.random.shuffle(np.arange(2000))
     test_inputs = tf.gather(test_inputs, test_rands)
